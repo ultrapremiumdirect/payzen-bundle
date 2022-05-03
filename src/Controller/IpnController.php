@@ -96,9 +96,13 @@ final class IpnController
             $orderStatus = $formAnswer['orderStatus'];
 
             /** @var PaymentInterface $payment */
-            $payment = $order->getLastPayment(PaymentInterface::STATE_NEW);
-            if ($orderStatus === 'PAID' && !empty($payment)) {
+            $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
+            $stateMachine = $this->factory->get($payment, PaymentTransitions::GRAPH);
+            if ($stateMachine->can(PaymentTransitions::TRANSITION_CREATE)) {
+                $stateMachine->apply(PaymentTransitions::TRANSITION_CREATE);
+            }
 
+            if ($orderStatus === 'PAID' && !empty($payment)) {
                 $payzenTotal = (int)$formAnswer['orderDetails']['orderTotalAmount'];
                 if ($payzenTotal != $order->getTotal()) {
                     $payment->setAmount($payzenTotal);

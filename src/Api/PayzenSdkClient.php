@@ -116,11 +116,6 @@ class PayzenSdkClient
         $ipnUrl = 'payzen_ipn_order_url';
         if ($action == 'CreateToken') {
             $ipnUrl = 'payzen_ipn_subscription_url';
-        } else {
-            $stateMachine = $this->factory->get($lastPayment, PaymentTransitions::GRAPH);
-            if ($stateMachine->can(PaymentTransitions::TRANSITION_CREATE)) {
-                $stateMachine->apply(PaymentTransitions::TRANSITION_CREATE);
-            }
         }
 
         $captureToken = $this->payum->getTokenFactory()->createToken(
